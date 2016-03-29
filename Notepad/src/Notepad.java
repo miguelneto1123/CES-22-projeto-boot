@@ -36,6 +36,17 @@ public class Notepad extends JFrame implements ActionListener {
 		
 		this.setMenuBar(this.menuBar);
 		this.menuBar.add(this.file); // criação da barra de menus
+		
+		this.file.setLabel("Arquivo");
+		
+		//--------- Botão de abrir arquivo
+		this.openFile.setLabel("Abrir");
+		this.openFile.addActionListener(this);
+		// adiciona um ActionListener pra saber quando foi clicado nele
+		this.openFile.setShortcut(new MenuShortcut(KeyEvent.VK_O, false));
+		// atalho do teclado
+		this.file.add(this.openFile);
+		// adiciona à aba Arquivo
 	}
 
 	@Override
