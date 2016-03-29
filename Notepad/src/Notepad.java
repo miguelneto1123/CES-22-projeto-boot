@@ -25,6 +25,16 @@ public class Notepad extends JFrame implements ActionListener {
 	public Notepad(){
 		this.setSize(600, 800); // tamanho inicial da tela
 		this.setTitle("Projeto Boot CES-22"); // título da tela
+		setDefaultCloseOperation(EXIT_ON_CLOSE); // fecha a aplicação
+		// quando clica em fechar
+		this.textArea.setFont(new Font("Lucida Console", Font.PLAIN, 12));
+		// definindo a fonte default pro texto
+		this.getContentPane().setLayout(new BorderLayout());
+		// pro texto preencher a tela inteira do aplicativo
+		this.getContentPane().add(textArea); // adiciona a área de texto
+		// ao painel da aplicação
+		
+		
 	}
 
 	@Override
