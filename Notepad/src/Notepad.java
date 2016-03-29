@@ -15,6 +15,8 @@ public class Notepad extends JFrame implements ActionListener {
 	 * importa definir porque vai ficar na tela inteira. A flag final
 	 * serve para fazer wrapping de palavras
 	 * */
+	
+	private MenuBar menuBar = new MenuBar(); //barra de menus
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
