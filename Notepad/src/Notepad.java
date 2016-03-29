@@ -53,6 +53,12 @@ public class Notepad extends JFrame implements ActionListener {
 		this.saveFile.addActionListener(this);
 		this.saveFile.setShortcut(new MenuShortcut(KeyEvent.VK_S, false));
 		this.file.add(this.saveFile);
+		
+		//--------- Botão de fechar
+		this.close.setLabel("Fechar");
+		this.close.addActionListener(this);
+		this.close.setShortcut(new MenuShortcut(KeyEvent.VK_F4,false));
+		this.file.add(this.close);
 	}
 
 	@Override
