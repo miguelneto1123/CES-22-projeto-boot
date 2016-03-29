@@ -17,6 +17,10 @@ public class Notepad extends JFrame implements ActionListener {
 	 * */
 	
 	private MenuBar menuBar = new MenuBar(); //barra de menus
+	private Menu file = new Menu(); // menu "Arquivo"
+	private MenuItem openFile = new MenuItem();  // opção abrir
+	private MenuItem saveFile = new MenuItem(); // opção salvar
+	private MenuItem close = new MenuItem(); // opção fechar
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
