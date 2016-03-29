@@ -63,7 +63,9 @@ public class Notepad extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+		// se for clicado no botão "Fechar" no menu "Arquivo"...
+		if (e.getSource() == this.close())
+			this.dispose();	// se livra de tudo e fecha a aplicação
 
 	}
 
