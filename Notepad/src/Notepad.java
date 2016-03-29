@@ -34,7 +34,8 @@ public class Notepad extends JFrame implements ActionListener {
 		this.getContentPane().add(textArea); // adiciona a área de texto
 		// ao painel da aplicação
 		
-		
+		this.setMenuBar(this.menuBar);
+		this.menuBar.add(this.file); // criação da barra de menus
 	}
 
 	@Override
