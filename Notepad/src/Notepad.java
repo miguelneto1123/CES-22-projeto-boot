@@ -47,6 +47,12 @@ public class Notepad extends JFrame implements ActionListener {
 		// atalho do teclado
 		this.file.add(this.openFile);
 		// adiciona à aba Arquivo
+		
+		//--------- Botão de salvar arquivo
+		this.saveFile.setLabel("Salvar");
+		this.saveFile.addActionListener(this);
+		this.saveFile.setShortcut(new MenuShortcut(KeyEvent.VK_S, false));
+		this.file.add(this.saveFile);
 	}
 
 	@Override
