@@ -16,11 +16,16 @@ public class Notepad extends JFrame implements ActionListener {
 	 * serve para fazer wrapping de palavras
 	 * */
 	
-	private MenuBar menuBar = new MenuBar(); //barra de menus
+	private MenuBar menuBar = new MenuBar(); // barra de menus
 	private Menu file = new Menu(); // menu "Arquivo"
 	private MenuItem openFile = new MenuItem();  // opção abrir
 	private MenuItem saveFile = new MenuItem(); // opção salvar
 	private MenuItem close = new MenuItem(); // opção fechar
+	
+	public Notepad(){
+		this.setSize(600, 800); // tamanho inicial da tela
+		this.setTitle("Projeto Boot CES-22"); // título da tela
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
