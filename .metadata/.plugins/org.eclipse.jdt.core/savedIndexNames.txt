@@ -1,3 +1,0 @@
-INDEX VERSION 1.127+E:\Documents\GitHub\Projeto Boot\CES-22-projeto-boot\.metadata\.plugins\org.eclipse.jdt.core
-3898563714.index
-1494649365.index
