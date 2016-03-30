@@ -81,27 +81,27 @@ public class Notepad extends JFrame implements ActionListener {
 		    	while (scan.hasNext()) // enquanto há algo para ler
 		    		this.textArea.append(scan.nextLine() + "\n"); // adicionar a linha ao TextArea
 		    	} catch (Exception ex) { // pegar qualquer exceção e...
-		    		// ...escreve no debug console
+		    		// ...escrever para o debug console
 		    	    System.out.println(ex.getMessage());
 		    	}
 		    }
 
 		}
 		
-		// e por último, se a fonte do evento foi a opção "Save"
+		// and lastly, if the source of the event was the "save" option
 		else if (e.getSource() == this.saveFile) {
-			JFileChooser save = new JFileChooser(); // novamente, abra um file chooser
-		    int option = save.showSaveDialog(this); // semelhante ao open file, só que dessa vez chamamos
-		    // showSaveDialog
-		    // se o usuário clicou em OK
+			JFileChooser save = new JFileChooser(); // again, open a file chooser
+		    int option = save.showSaveDialog(this); // similar to the open file, only this time we call
+		    // showSaveDialog instead of showOpenDialog
+		    // if the user clicked OK (and not cancel)
 		    if (option == JFileChooser.APPROVE_OPTION) {
 		    	try {
-		    		// cria um buffered writer para escrever num arquivo
+		    		// create a buffered writer to write to a file
 		            BufferedWriter out = new BufferedWriter(new FileWriter(save.getSelectedFile().getPath()));
-		            out.write(this.textArea.getText()); // escreve o conteúdo do TextAreawrite no arquivo
-		            out.close(); // fecha o file stream
-		        } catch (Exception ex) { // novamente, pega qualquer exceção e
-		        	// ...e escreve no debug console
+		            out.write(this.textArea.getText()); // write the contents of the TextArea to the file
+		            out.close(); // close the file stream
+		        } catch (Exception ex) { // again, catch any exceptions and...
+		        	// ...write to the debug console
 		            System.out.println(ex.getMessage());
 		        }
 		        }
@@ -109,7 +109,7 @@ public class Notepad extends JFrame implements ActionListener {
 		
 	}
 	
-	// o método main para criar o notepad e torná-lo visível
+	// the main method, for actually creating our notepad and setting it to visible.
 	    public static void main(String args[]) {
 	        Notepad app = new Notepad();
 	        app.setVisible(true);
