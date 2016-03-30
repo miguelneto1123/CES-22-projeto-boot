@@ -64,56 +64,9 @@ public class Notepad extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// se for clicado no botão "Fechar" no menu "Arquivo"...
-		if (e.getSource() == this.close)
+		if (e.getSource() == this.close())
 			this.dispose();	// se livra de tudo e fecha a aplicação
-		// se for clicado no botão "Open" no menu "Arquivo"...
-				else if (e.getSource() == this.openFile) {
-				    JFileChooser open = new JFileChooser(); // abra um selecionador de arquios
-				    int option = open.showOpenDialog(this); // receba a opção que o usuário selecionou (approve ou cancel)
-				    // NOTA: pq estamos abrindo um arquivo, nós chamamos showOpenDialog
-				    // se o usuário clicou em OK, nós temos "APPROVE_OPTION"
-				    // então nós queremos abrir o arquivo
-				    if (option == JFileChooser.APPROVE_OPTION) {
-				    	this.textArea.setText(""); // limpar a área de texto antes de aplicar o conteúdo do arquivo
-				    	try {
-				    	// criar um scanner para ler o arquivo (getSelectedFile().getPath() irá pegar o path do arquivo)
-				    	Scanner scan = new Scanner(new FileReader(open.getSelectedFile().getPath()));
-				    	while (scan.hasNext()) // enquanto há algo para ler
-				    		this.textArea.append(scan.nextLine() + "\n"); // adicionar a linha ao TextArea
-				    	} catch (Exception ex) { // pegar qualquer exceção e...
-				    		// ...escreve no debug console
-				    	    System.out.println(ex.getMessage());
-				    	}
-				    }
 
-				}
-				
-				// e por último, se a fonte do evento foi a opção "Save"
-				else if (e.getSource() == this.saveFile) {
-					JFileChooser save = new JFileChooser(); // novamente, abra um file chooser
-				    int option = save.showSaveDialog(this); // semelhante ao open file, só que dessa vez chamamos
-				    // showSaveDialog
-				    // se o usuário clicou em OK
-				    if (option == JFileChooser.APPROVE_OPTION) {
-				    	try {
-				    		// cria um buffered writer para escrever num arquivo
-				            BufferedWriter out = new BufferedWriter(new FileWriter(save.getSelectedFile().getPath()));
-				            out.write(this.textArea.getText()); // escreve o conteúdo do TextAreawrite no arquivo
-				            out.close(); // fecha o file stream
-				        } catch (Exception ex) { // novamente, pega qualquer exceção e
-				        	// ...e escreve no debug console
-				            System.out.println(ex.getMessage());
-				        }
-				        }
-				    }
-				
-			}
-			
-			// o método main para criar o notepad e torná-lo visível
-			    public static void main(String args[]) {
-			        Notepad app = new Notepad();
-			        app.setVisible(true);
-			    }
 	}
 
 }
