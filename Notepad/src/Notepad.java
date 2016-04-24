@@ -1,12 +1,14 @@
 import javax.swing.*; // para o design do JFrame principal
 import java.awt.*; // para fazer a GUI
 import java.awt.event.*; // para lidar com eventos
-import java.util.Scanner; // para ler de arquivos
+import java.util.*; // para ler de arquivos e pegar o timestamp atual
+import java.text.*; // para formatar as datas
 import java.io.*; // para escrever em arquivos
+import java.sql.*;
 
-public class Notepad extends JFrame implements ActionListener {
-	private TextArea textArea = new TextArea("", 0,0,
-			TextArea.SCROLLBARS_VERTICAL_ONLY);
+public class Notepad{
+	//private TextArea textArea = new TextArea("", 0,0,
+		//	TextArea.SCROLLBARS_VERTICAL_ONLY);
 	/*
 	 * Aqui Ã© a parte principal do aplicativo. O primeiro argumento do
 	 * construtor Ã© uma string vazia, que Ã© o "texto inicial" que
@@ -16,7 +18,7 @@ public class Notepad extends JFrame implements ActionListener {
 	 * serve para fazer wrapping de palavras
 	 * */
 	
-	private MenuBar menuBar = new MenuBar(); // barra de menus
+	/*private MenuBar menuBar = new MenuBar(); // barra de menus
 	private Menu file = new Menu(); // menu "Arquivo"
 	private MenuItem openFile = new MenuItem();  // opÃ§Ã£o abrir
 	private MenuItem saveFile = new MenuItem(); // opÃ§Ã£o salvar
@@ -66,21 +68,21 @@ public class Notepad extends JFrame implements ActionListener {
 		// se for clicado no botÃ£o "Fechar" no menu "Arquivo"...
 		if (e.getSource() == this.close)
 			this.dispose();	// se livra de tudo e fecha a aplicaÃ§Ã£o
-		// se for clicado no botão "Open" no menu "Arquivo"...
+		// se for clicado no botï¿½o "Open" no menu "Arquivo"...
 		else if (e.getSource() == this.openFile) {
 		    JFileChooser open = new JFileChooser(); // abra um selecionador de arquios
-		    int option = open.showOpenDialog(this); // receba a opção que o usuário selecionou (approve ou cancel)
-		    // NOTA: pq estamos abrindo um arquivo, nós chamamos showOpenDialog
-		    // se o usuário clicou em OK, nós temos "APPROVE_OPTION"
-		    // então nós queremos abrir o arquivo
+		    int option = open.showOpenDialog(this); // receba a opï¿½ï¿½o que o usuï¿½rio selecionou (approve ou cancel)
+		    // NOTA: pq estamos abrindo um arquivo, nï¿½s chamamos showOpenDialog
+		    // se o usuï¿½rio clicou em OK, nï¿½s temos "APPROVE_OPTION"
+		    // entï¿½o nï¿½s queremos abrir o arquivo
 		    if (option == JFileChooser.APPROVE_OPTION) {
-		    	this.textArea.setText(""); // limpar a área de texto antes de aplicar o conteúdo do arquivo
+		    	this.textArea.setText(""); // limpar a ï¿½rea de texto antes de aplicar o conteï¿½do do arquivo
 		    	try {
-		    	// criar um scanner para ler o arquivo (getSelectedFile().getPath() irá pegar o path do arquivo)
+		    	// criar um scanner para ler o arquivo (getSelectedFile().getPath() irï¿½ pegar o path do arquivo)
 		    	Scanner scan = new Scanner(new FileReader(open.getSelectedFile().getPath()));
-		    	while (scan.hasNext()) // enquanto há algo para ler
+		    	while (scan.hasNext()) // enquanto hï¿½ algo para ler
 		    		this.textArea.append(scan.nextLine() + "\n"); // adicionar a linha ao TextArea
-		    	} catch (Exception ex) { // pegar qualquer exceção e...
+		    	} catch (Exception ex) { // pegar qualquer exceï¿½ï¿½o e...
 		    		// ...escreve no debug console
 		    	    System.out.println(ex.getMessage());
 		    	}
@@ -88,19 +90,19 @@ public class Notepad extends JFrame implements ActionListener {
 
 		}
 		
-		// e por último, se a fonte do evento foi a opção "Save"
+		// e por ï¿½ltimo, se a fonte do evento foi a opï¿½ï¿½o "Save"
 		else if (e.getSource() == this.saveFile) {
 			JFileChooser save = new JFileChooser(); // novamente, abra um file chooser
-		    int option = save.showSaveDialog(this); // semelhante ao open file, só que dessa vez chamamos
+		    int option = save.showSaveDialog(this); // semelhante ao open file, sï¿½ que dessa vez chamamos
 		    // showSaveDialog
-		    // se o usuário clicou em OK
+		    // se o usuï¿½rio clicou em OK
 		    if (option == JFileChooser.APPROVE_OPTION) {
 		    	try {
 		    		// cria um buffered writer para escrever num arquivo
 		            BufferedWriter out = new BufferedWriter(new FileWriter(save.getSelectedFile().getPath()));
-		            out.write(this.textArea.getText()); // escreve o conteúdo do TextAreawrite no arquivo
+		            out.write(this.textArea.getText()); // escreve o conteï¿½do do TextAreawrite no arquivo
 		            out.close(); // fecha o file stream
-		        } catch (Exception ex) { // novamente, pega qualquer exceção e
+		        } catch (Exception ex) { // novamente, pega qualquer exceï¿½ï¿½o e
 		        	// ...e escreve no debug console
 		            System.out.println(ex.getMessage());
 		        }
@@ -109,9 +111,89 @@ public class Notepad extends JFrame implements ActionListener {
 		
 	}
 	
-	// o método main para criar o notepad e torná-lo visível
+	// o mï¿½todo main para criar o notepad e tornï¿½-lo visï¿½vel
 	    public static void main(String args[]) {
 	        Notepad app = new Notepad();
 	        app.setVisible(true);
-	    }
+	    }*/
+	private Connection conn;
+	
+	public void createTable(String filePath){
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:"+filePath);
+			Statement st = conn.createStatement();
+			st.setQueryTimeout(30);
+			
+			st.executeUpdate("DROP TABLE IF EXISTS base");
+			st.executeUpdate("CREATE TABLE base "+
+			"(name STRING, text STRING, taglist STRING, modified "
+			+ "TIMESTAMP DEFAULT (datetime('now','localtime')), "
+			+ "created TIMESTAMP DEFAULT (datetime('now','localtime')))");
+		} catch (SQLException s) {
+			System.err.println(s.getMessage()+" hahaha");
+		}
+	}
+	
+	public void readTable(String filePath) {
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:"+filePath);
+			Statement st = conn.createStatement();
+			st.setQueryTimeout(30);
+			ResultSet rs = st.executeQuery("SELECT * from base");
+			
+			while (rs.next()) {
+				System.out.println("name = "+rs.getString("name"));
+				System.out.println("text = "+rs.getString("text"));
+				System.out.println("tags = "+rs.getString("taglist"));
+				System.out.println("modified = "+rs.getString(
+					"modified"));
+				System.out.println("created = "+rs.getString("created"));
+				System.out.println("");
+			}
+		} catch (SQLException s) {
+			System.err.println(s.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addNote(String name, String text, String tags) {
+		if (conn != null) {
+			try {
+				Statement st = conn.createStatement();
+				st.executeUpdate("INSERT INTO base(name,text,taglist)"
+					+ " values('"+name+"', '"
+					+text+"', '"+tags+"')");
+			} catch (SQLException s) {
+				System.err.println(s.getMessage());
+			}
+		}
+	}
+	
+	public void editNote(String name, String text, String tags,
+			String oldName) {
+		if (conn != null){
+			try {
+				Statement st = conn.createStatement();
+				
+				st.executeUpdate("UPDATE base "
+					+ "SET name='"+name+"', text='"+text+"', "
+					+ "taglist='"+tags+"', modified="
+					+ "datetime('now','localtime') "
+					+ "WHERE name='"+oldName+"'");
+			} catch (SQLException s) {
+				System.err.println(s.getMessage());
+			}
+		}
+	}
+	
+	public static void main(String args[]){
+		Notepad n = new Notepad();
+		n.createTable("test.db");
+		n.addNote("huehuehue", "soh testando", "teste, nota");
+		n.addNote("hahaha", "soh testando", "teste, nota");
+		n.addNote("hihihi", "soh testando", "teste, nota");
+		n.editNote("hehehe", "mudei aqui", "updated", "hihihi");
+		n.readTable("test.db");
+	}
 }
