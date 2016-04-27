@@ -20,6 +20,9 @@ ItemListener {
 	private MenuItem deleteNote = new MenuItem(); // opção deletar nota
 	private MenuItem sortNotes = new MenuItem(); // opção ordenar notas
 	
+	private JPanel container = new JPanel();
+	private JScrollPane masterScroll = new JScrollPane(container);
+	
 	private Connection conn; // responsável pela conexão com a database
 	
 	private ArrayList<Selector> als = new ArrayList<Selector>();
@@ -28,12 +31,18 @@ ItemListener {
 	private ArrayList<JPanel> alp = new ArrayList<JPanel>();
 	
 	public Notepad(){
-		this.setSize(600, 700); // tamanho inicial da tela
+		this.setSize(600, 600); // tamanho inicial da tela
 		this.setTitle("Projeto Boot CES-22"); // título da tela
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE); // fecha a aplicação
 		// quando clica em fechar
-		this.getContentPane().setLayout(new BoxLayout(
-				this.getContentPane(), BoxLayout.Y_AXIS));
+		container.setLayout(new BoxLayout(
+				container, BoxLayout.Y_AXIS));
+		masterScroll.setVerticalScrollBarPolicy(
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		masterScroll.setHorizontalScrollBarPolicy(
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.getContentPane().add(masterScroll);
+		
 		
 		this.setMenuBar(this.menuBar);
 		this.menuBar.add(this.file);
@@ -115,10 +124,8 @@ ItemListener {
 		    if (option == JFileChooser.APPROVE_OPTION) {
 		    	readTable(open.getSelectedFile().getPath());
 		    	for (int i = 0; i < alp.size(); i++)
-		    		this.getContentPane().add(alp.get(i));
+		    		this.container.add(alp.get(i));
 		    	alp.clear();
-		    	//this.setVisible(false);
-		    	//this.setVisible(true);
 		    	SwingUtilities.updateComponentTreeUI(this);
 		    }
 		}
@@ -217,9 +224,11 @@ ItemListener {
 				System.out.println("created = "+rs.getString("created"));
 				System.out.println("");*/
 				JPanel panel = new JPanel();
+				panel.setSize(600, 200);
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 				
 				JLabel name = new JLabel(rs.getString("name"));
-				name.setFont(new Font("serif", Font.BOLD,18));
+				name.setFont(new Font("arial", Font.BOLD,18));
 				String s = "Criada: " + rs.getString("created");
 				s = s+", Modificada: "+rs.getString("modified");
 				JLabel timestamps = new JLabel(s);
@@ -227,6 +236,7 @@ ItemListener {
 				JTextArea text = new JTextArea(rs.getString("text"),
 						4, 70);
 				text.setLineWrap(true);
+				text.setEditable(false);
 				JScrollPane scroller = new JScrollPane(text);
 				scroller.setVerticalScrollBarPolicy(
 					ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
