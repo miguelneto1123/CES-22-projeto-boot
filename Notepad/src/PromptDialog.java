@@ -8,13 +8,15 @@ public class PromptDialog extends JDialog implements ActionListener {
 	private JTextField tagBox;
 	private JButton ok;
 	private String content;
-	private int delete;
+	private int delete = 0;
 	private String selection;
 	
 	public PromptDialog(String name, String text, String tags,
 			String toDo, int numNotes, JFrame parent) {
 		super(parent, true);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setSize(new Dimension(parent.getWidth() / 2,
+				parent.getHeight() / 2));
 		String title = toDo + " nota";
 		if (numNotes > 1) {
 			title += "s";
@@ -46,10 +48,10 @@ public class PromptDialog extends JDialog implements ActionListener {
 			
 			JPanel panel = new JPanel();
 			
-			nameBox = new JTextField(name);
-			textBox = new JTextArea(text);
+			nameBox = new JTextField(name, 20);
+			textBox = new JTextArea(text,10, 20);
 			textBox.setLineWrap(true);
-			tagBox = new JTextField(tags);
+			tagBox = new JTextField(tags, 20);
 			
 			JScrollPane scroller = new JScrollPane(textBox);
 			
@@ -65,17 +67,19 @@ public class PromptDialog extends JDialog implements ActionListener {
 			panel.add(new JLabel("Tags separadas por ,"));
 			panel.add(tagBox);
 			
-			ok = new JButton("Ok");
+			ok = new JButton("Salvar");
 			ok.addActionListener(this);
 			
 			this.getContentPane().add(panel, BorderLayout.CENTER);
 			this.getContentPane().add(ok, BorderLayout.SOUTH);
 		}
-		setVisible(true);
+		if (!toDo.equals("Deletar") && !toDo.equals("Ordenar")){
+			setVisible(true);
+		}
 	}
 	
 	public boolean getValue() {
-		if (delete == 1)
+		if (delete == 0)
 			return true;
 		return false;
 	}

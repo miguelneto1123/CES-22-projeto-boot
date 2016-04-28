@@ -1,4 +1,5 @@
 import javax.swing.*; // para o design do JFrame principal
+import javax.swing.filechooser.*;
 import java.awt.*; // para fazer a GUI
 import java.awt.event.*; // para lidar com eventos
 import java.util.*; // para ler de arquivos e pegar o timestamp atual
@@ -23,7 +24,9 @@ ItemListener {
 	private JPanel container = new JPanel();
 	private JScrollPane masterScroll = new JScrollPane(container);
 	
-	private Connection conn; // responsável pela conexão com a database
+	private Connection conn = null;
+	// responsável pela conexão com a database
+	private String currentPath = "";
 	
 	private ArrayList<Selector> als = new ArrayList<Selector>();
 	private String toBeEdited = "";
@@ -76,6 +79,7 @@ ItemListener {
 		//--------- Botão de nova nota
 		this.newNote.setLabel("Nova nota");
 		this.newNote.addActionListener(this);
+		this.newNote.setEnabled(false);
 		this.newNote.setShortcut(new MenuShortcut(KeyEvent.VK_EQUALS,
 				false));
 		this.note.add(this.newNote);
@@ -94,6 +98,8 @@ ItemListener {
 		//--------- Botão de deletar nota
 		this.deleteNote.setLabel("Deletar nota");
 		this.deleteNote.addActionListener(this);
+		if (this.als.size() == 0)
+			this.deleteNote.setEnabled(false);
 		this.deleteNote.setShortcut(new MenuShortcut(KeyEvent.VK_0,
 				false));
 		this.note.add(this.deleteNote);
@@ -101,6 +107,7 @@ ItemListener {
 		//--------- Botão de ordenar notas
 		this.sortNotes.setLabel("Ordenar");
 		this.sortNotes.addActionListener(this);
+		this.sortNotes.setEnabled(false);
 		this.sortNotes.setShortcut(new MenuShortcut(KeyEvent.VK_9,
 				false));
 		this.note.add(this.sortNotes);
@@ -116,6 +123,8 @@ ItemListener {
 		else if (e.getSource() == this.openFile) {
 			// abra um selecionador de arquivos
 		    JFileChooser open = new JFileChooser();
+		    open.setFileFilter(new FileNameExtensionFilter(
+					"Database files", "db"));
 		    // receba a opção que o usuário selecionou (approve ou cancel)
 		    int option = open.showOpenDialog(this);
 		    // NOTA: estamos abrindo um arquivo, chamamos showOpenDialog
@@ -123,9 +132,14 @@ ItemListener {
 		    // então nós queremos abrir o arquivo
 		    if (option == JFileChooser.APPROVE_OPTION) {
 		    	readTable(open.getSelectedFile().getPath());
+		    	currentPath = open.getSelectedFile().getPath();
+		    	this.container.removeAll();
+		    	this.container.updateUI();
 		    	for (int i = 0; i < alp.size(); i++)
 		    		this.container.add(alp.get(i));
 		    	alp.clear();
+		    	this.newNote.setEnabled(true);
+		    	this.sortNotes.setEnabled(true);
 		    	SwingUtilities.updateComponentTreeUI(this);
 		    }
 		}
@@ -134,33 +148,115 @@ ItemListener {
 		else if (e.getSource() == this.newFile) {
 			// novamente, abra um file chooser
 			JFileChooser save = new JFileChooser();
+			save.setFileFilter(new FileNameExtensionFilter(
+					"Database files", "db"));
 			// semelhante ao open file, só que dessa vez chamamos
 		    // showSaveDialog
 		    int option = save.showSaveDialog(this);
 		    // se o usuário clicou em OK
 		    if (option == JFileChooser.APPROVE_OPTION) {
-		    	createTable(save.getSelectedFile().getPath());
+		    	currentPath = save.getSelectedFile().getPath();
+		    	StringTokenizer st = new StringTokenizer(
+		    			save.getSelectedFile().getPath(), ".");
+		    	boolean extension = false;
+		    	for (String s = st.nextToken();
+		    			st.hasMoreTokens(); s = st.nextToken()){
+		    		if (s.equals("db"));
+		    		extension = true;
+		    	}
+		    	if (!extension){
+		    		currentPath = currentPath + ".db";
+		    		createTable(currentPath);
+		    	}
+		    	else
+		    		createTable(currentPath);
+		    	readTable(currentPath);
+		    	this.newNote.setEnabled(true);
+		    	this.sortNotes.setEnabled(true);
+				this.container.removeAll();
+		    	this.container.updateUI();
+				for (int i = 0; i < alp.size(); i++)
+		    		this.container.add(alp.get(i));
+		    	alp.clear();
+				SwingUtilities.updateComponentTreeUI(this);
 		    }
 		}
 		
 		// se foi clicado no botão "Nova nota" no menu "Notas"...
 		else if (e.getSource() == this.newNote){
+			PromptDialog p = new PromptDialog(
+					"","","","Adicionar", als.size(), this);
+			String content = p.getContent();
+			StringTokenizer st = new StringTokenizer(content, "~");
+			String name = st.nextToken();
+			String text = st.nextToken();
+			String tags = st.nextToken();
+			addNote(name, text, tags);
+			readTable(currentPath);
+			this.container.removeAll();
+	    	this.container.updateUI();
+			for (int i = 0; i < alp.size(); i++)
+	    		this.container.add(alp.get(i));
+	    	alp.clear();
+			SwingUtilities.updateComponentTreeUI(this);
 			
 		}
 		
 		// se foi clicado no botão "Editar nota" no menu "Notas"...
 		else if (e.getSource() == this.editNote){
+			Selector s = als.get(0);
 			
+			String oName = s.getAssociatedName();
+			String oText = s.getAssociatedText();
+			String oTags = s.getAssociatedTags();
+			
+			PromptDialog p = new PromptDialog(
+					oName,oText,oTags,"Editar", als.size(), this);
+			String content = p.getContent();
+			StringTokenizer st = new StringTokenizer(content, "~");
+			String name = st.nextToken();
+			String text = st.nextToken();
+			String tags = st.nextToken();
+			editNote(name, text, tags, oName);
+			readTable(currentPath);
+			this.container.removeAll();
+	    	this.container.updateUI();
+			for (int i = 0; i < alp.size(); i++)
+	    		this.container.add(alp.get(i));
+	    	alp.clear();
+			SwingUtilities.updateComponentTreeUI(this);
 		}
 		
 		// se foi clicado no botão "Deletar nota" no menu "Notas"...
 		else if (e.getSource() == this.deleteNote){
-			
+			PromptDialog p = new PromptDialog(
+					"","","","Deletar",als.size(),this);
+			boolean go = p.getValue();
+			for (int i = 0; go && i < als.size(); i++){
+				Selector s = als.get(i);
+				deleteNote(s.getAssociatedName());
+			}
+			readTable(currentPath);
+			this.container.removeAll();
+	    	this.container.updateUI();
+			for (int i = 0; i < alp.size(); i++)
+	    		this.container.add(alp.get(i));
+	    	alp.clear();
+			SwingUtilities.updateComponentTreeUI(this);
 		}
 
 		// se foi clicado no botão "Ordenar notas" no menu "Notas"...
 		else if (e.getSource() == this.sortNotes){
-			
+			PromptDialog p = new PromptDialog(
+				"","","","Ordenar", als.size(), this);
+			String s = p.getSelection();
+			readTable(currentPath, true, s);
+			this.container.removeAll();
+	    	this.container.updateUI();
+			for (int i = 0; i < alp.size(); i++)
+	    		this.container.add(alp.get(i));
+	    	alp.clear();
+			SwingUtilities.updateComponentTreeUI(this);
 		}
 	}
 	
@@ -179,6 +275,10 @@ ItemListener {
 			this.editNote.setEnabled(false);
 		else
 			this.editNote.setEnabled(true);
+		if (this.als.size() == 0)
+			this.deleteNote.setEnabled(false);
+		else
+			this.deleteNote.setEnabled(true);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 	
@@ -250,7 +350,9 @@ ItemListener {
 				s = "Tags: "+rs.getString("taglist");
 				panel.add(new JLabel(s));
 				Selector sel = new Selector("Selecionado",
-						rs.getString("name"));
+						rs.getString("name"),
+						rs.getString("text"),
+						rs.getString("taglist"));
 				sel.addItemListener(this);
 				panel.add(sel);
 				
@@ -295,6 +397,17 @@ ItemListener {
 			} catch (SQLException s) {
 				System.err.println(s.getMessage());
 			}
+		}
+	}
+	
+	public void deleteNote(String name) {
+		try {
+			Statement st = conn.createStatement();
+			
+			st.executeUpdate("DELETE FROM base WHERE"
+					+ " name='"+name+"'");
+		} catch (SQLException s) {
+			System.err.println(s.getMessage());
 		}
 	}
 	
